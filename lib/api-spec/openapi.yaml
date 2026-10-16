@@ -1,0 +1,212 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: player
+    description: Account-scoped game saves and rewards
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /player/save:
+    get:
+      operationId: getPlayerSave
+      tags: [player]
+      summary: Get the signed-in player's cloud save
+      responses:
+        "200":
+          description: Player save and reward challenge status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlayerSaveResponse"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: savePlayerGame
+      tags: [player]
+      summary: Save the signed-in player's game progress
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlayerSaveInput"
+      responses:
+        "200":
+          description: Updated player save and reward challenge status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlayerSaveResponse"
+        "400":
+          description: Invalid save data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /player/grand-challenge/claim:
+    post:
+      operationId: claimGrandChallengeReward
+      tags: [player]
+      summary: Claim the one-time Grand Challenge reward
+      description: Awards 1,000,000 coins once per signed-in player after all three required daily missions are completed.
+      responses:
+        "200":
+          description: Reward credited to the player's cloud save
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrandChallengeClaimResponse"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Challenge requirements are incomplete or the reward was already claimed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    GameState:
+      type: object
+      properties:
+        balance: { type: number }
+        tapValue: { type: number }
+        energy: { type: number }
+        maxEnergy: { type: number }
+        upgrades:
+          type: object
+          additionalProperties: { type: integer }
+        totalEarned: { type: number }
+        lastSaved: { type: number }
+      required: [balance, tapValue, energy, maxEnergy, upgrades, totalEarned, lastSaved]
+    MissionsState:
+      type: object
+      properties:
+        date: { type: string }
+        tapsToday: { type: number }
+        upgradeSpendToday: { type: number }
+        passiveEarnedToday: { type: number }
+        balancePeak: { type: number }
+        claimedIds:
+          type: array
+          items: { type: string }
+        comboRevealedIds:
+          type: array
+          items: { type: string }
+        comboClaimed: { type: boolean }
+      required: [date, tapsToday, upgradeSpendToday, passiveEarnedToday, balancePeak, claimedIds, comboRevealedIds, comboClaimed]
+    ReferralEntry:
+      type: object
+      properties:
+        userId: { type: string }
+        name: { type: string }
+        level: { type: integer }
+        passiveHr: { type: number }
+        joinedAt: { type: number }
+        premium: { type: boolean }
+      required: [userId, name, level, passiveHr, joinedAt, premium]
+    ReferralState:
+      type: object
+      properties:
+        myUserId: { type: string }
+        referredBy: { type: [string, "null"] }
+        joinBonusClaimed: { type: boolean }
+        referrals:
+          type: array
+          items: { $ref: "#/components/schemas/ReferralEntry" }
+      required: [myUserId, referredBy, joinBonusClaimed, referrals]
+    DailyRewardState:
+      type: object
+      properties:
+        streak: { type: integer }
+        lastClaimed: { type: number }
+      required: [streak, lastClaimed]
+    LuckySpinState:
+      type: object
+      properties:
+        lastSpin: { type: number }
+      required: [lastSpin]
+    PlayerSave:
+      type: object
+      properties:
+        gameState: { $ref: "#/components/schemas/GameState" }
+        missionsState: { $ref: "#/components/schemas/MissionsState" }
+        referralState: { $ref: "#/components/schemas/ReferralState" }
+        dailyRewardState: { $ref: "#/components/schemas/DailyRewardState" }
+        luckySpinState: { $ref: "#/components/schemas/LuckySpinState" }
+      required: [gameState, missionsState, referralState, dailyRewardState, luckySpinState]
+    ChallengeStatus:
+      type: object
+      properties:
+        eligible: { type: boolean }
+        claimed: { type: boolean }
+        claimedAt: { type: [number, "null"] }
+        completedMissionIds:
+          type: array
+          items: { type: string }
+      required: [eligible, claimed, claimedAt, completedMissionIds]
+    PlayerSaveResponse:
+      type: object
+      properties:
+        save: { oneOf: [{ $ref: "#/components/schemas/PlayerSave" }, { type: "null" }] }
+        challenge: { $ref: "#/components/schemas/ChallengeStatus" }
+      required: [save, challenge]
+    PlayerSaveInput:
+      type: object
+      properties:
+        save: { $ref: "#/components/schemas/PlayerSave" }
+      required: [save]
+    GrandChallengeClaimResponse:
+      type: object
+      properties:
+        save: { $ref: "#/components/schemas/PlayerSave" }
+        challenge: { $ref: "#/components/schemas/ChallengeStatus" }
+        rewardCoins: { type: integer, const: 1000000 }
+      required: [save, challenge, rewardCoins]
+    ErrorResponse:
+      type: object
+      properties:
+        error: { type: string }
+      required: [error]
+
