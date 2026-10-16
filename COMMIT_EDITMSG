@@ -1,0 +1,10 @@
+Slow down energy regeneration and limit offline earnings to 3 hours
+
+Adjusted ENERGY_RECHARGE_RATE to 1 and implemented OFFLINE_CAP_SECS to limit passive income accumulation while offline.
+
+Replit-Commit-Author: Agent
+Replit-Commit-Session-Id: dbbca899-8430-4bd4-bbfd-ca73b206db66
+Replit-Commit-Checkpoint-Type: full_checkpoint
+Replit-Commit-Event-Id: d11f2025-9345-41d0-8b2a-c35539ad809b
+Replit-Commit-Screenshot-Url: https://storage.googleapis.com/screenshot-production-us-central1/6e19589a-418b-4c44-9cd7-36f0f26ff739/dbbca899-8430-4bd4-bbfd-ca73b206db66/GexmClo
+Replit-Helium-Checkpoint-Created: true

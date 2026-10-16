@@ -1,0 +1,1 @@
+- [Account-wide game progress](account-wide-game-progress.md) — preserve cross-device saves and the once-per-account Grand Challenge claim.
