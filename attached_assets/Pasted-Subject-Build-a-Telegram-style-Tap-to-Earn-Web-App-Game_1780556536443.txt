@@ -1,0 +1,25 @@
+Subject: Build a Telegram-style Tap-to-Earn Web App Game (Hamster Kombat Clone)
+
+Role: Lead Frontend Engineer & Gamification Expert
+
+Context: I want to build a complete, production-ready, mobile-first Tap-to-Earn incremental clicker game inspired by Hamster Kombat, optimized to run inside the Replit browser frame.
+
+Technical Stack: HTML5, CSS3, and Vanilla JavaScript (ES6+).
+
+UI/UX Requirements:
+1. Layout Framework: Wrap the entire application in a centered smartphone-styled frame wrapper (max-width 450px) to simulate a mobile app interface. Give it a sleek dark-mode background (deep obsidian/charcoal) with neon gold and blue accents.
+2. The Dashboard: Display three key counters prominently at the top:
+   - Total Coin Balance (with a subtle counting animation).
+   - Tap Profit Value (starts at +1).
+   - Passive Profit Per Hour (or per second).
+3. Main Clicker Interface: A large, highly styled circular button/avatar in the center. Clicking this must trigger a subtle scale-down and scale-up animation ("squish effect").
+4. Tap Particle System: Clicking the main item must spawn a floating "+1" (or current tap value) text block at the exact cursor coordinates, drifting upwards and fading out over 0.8 seconds.
+5. Energy System: Place a visible energy progress bar beneath the coin layout (e.g., 500/500). Tapping consumes energy. If energy hits 0, tapping yields nothing. Energy must recharge automatically at a rate of +3 per second.
+6. Market/Upgrade Tabs: A clean tab system at the bottom to switch views between the "Main Tap Room" and the "Upgrade Exchange". The upgrade screen should display a grid of purchase cards (matching the cost/yield scaling math).
+
+Game Logic & Architecture (app.js):
+1. The Ticking Engine: Use a continuous JavaScript interval loop running every 1000ms to calculate and add the player's total cumulative passive income rate to their balance.
+2. State Persistence: Integrate browser 'localStorage' to automatically save the player's coin balance, energy, upgrade levels, and current time when they exit, loading it back seamlessly when they refresh.
+3. Scaled Pricing Matrix: Implement a geometric scaling multiplier formula for card purchases so that costs rise progressively by 15% with each subsequent upgrade level purchased.
+
+Deliverables: Provide the complete, clean, modular code for index.html, style.css, and app.js with zero structural omissions or placeholder shortcuts.
